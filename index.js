@@ -6,6 +6,9 @@ let bc = new Blockchain();
 bc.addBlock(new Block(1, '20/07/2017', { amount: 1 }));
 bc.addBlock(new Block(2, '20/07/2017', { amount: 1 }));
 
+console.log(JSON.stringify((bc)));
+console.log(bc.isChainValid());
+
 class BlockChain{
   constructor() {
     this.chain = [this.createGenesisBlock()];
