@@ -10,6 +10,12 @@ class BlockChain{
   createGenesisBlock() {
     return new Block(0, '01/01/2017', 'Genesis block', '0');
   }
+
+  addBlock(block) {
+    block.previousHash = this.chain[this.chain.length - 1].hash;
+    block.hash = block.calculateHash();
+    this.chain.push(block);
+  }
 }
 
 class Block {
