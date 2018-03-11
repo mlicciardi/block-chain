@@ -3,6 +3,8 @@
 const SHA256 = require('crypto-js/sha256');
 
 let bc = new Blockchain();
+bc.addBlock(new Block(1, '20/07/2017', { amount: 1 }));
+bc.addBlock(new Block(2, '20/07/2017', { amount: 1 }));
 
 class BlockChain{
   constructor() {
