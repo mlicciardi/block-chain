@@ -4,7 +4,11 @@ const SHA256 = require('crypto-js/sha256');
 
 class BlockChain{
   constructor() {
-      this.chain = [];
+    this.chain = [this.createGenesisBlock()];
+  }
+
+  createGenesisBlock() {
+    return new Block(0, '01/01/2017', 'Genesis block', '0');
   }
 }
 
