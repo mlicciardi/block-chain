@@ -54,6 +54,8 @@ let bc = new BlockChain();
 bc.addBlock(new Block(1, moment().unix(), { amount: 1 }));
 bc.addBlock(new Block(2, moment().unix(), { amount: 1 }));
 
+console.log(JSON.stringify(bc, null, 4));
+
 console.log(`BC ${bc.isChainValid() ? 'is valid' : 'integrity is corrupted'}`);
 
 console.log('Changing a block...');
@@ -61,5 +63,3 @@ bc.chain[1].data = { amount: 100 };
 bc.chain[1].hash = bc.chain[1].calculateHash();
 
 console.log(`BC ${bc.isChainValid() ? 'is valid' : 'integrity is corrupted'}`);
-
-console.log(JSON.stringify(bc, null, 4));
