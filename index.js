@@ -19,7 +19,7 @@ class BlockChain{
 
   getLatestBlock() {
     return this.chain[this.chain.length - 1];
-}
+  }
 }
 
 class Block {
