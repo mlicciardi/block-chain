@@ -2,6 +2,8 @@
 
 const SHA256 = require('crypto-js/sha256');
 
+let bc = new Blockchain();
+
 class BlockChain{
   constructor() {
     this.chain = [this.createGenesisBlock()];
