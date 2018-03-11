@@ -6,8 +6,14 @@ let bc = new Blockchain();
 bc.addBlock(new Block(1, '20/07/2017', { amount: 1 }));
 bc.addBlock(new Block(2, '20/07/2017', { amount: 1 }));
 
-console.log(JSON.stringify((bc, null, 4)));
 console.log(`BC ${bc.isChainValid() ? 'is valid' : 'integrity is corrupted'}`);
+
+console.log('Changing a block...');
+bc.chain[1].data = { amount: 100 };
+
+console.log(`BC ${bc.isChainValid() ? 'is valid' : 'integrity is corrupted'}`);
+
+console.log(JSON.stringify((bc, null, 4)));
 
 class BlockChain{
   constructor() {
