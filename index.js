@@ -10,6 +10,7 @@ console.log(`BC ${bc.isChainValid() ? 'is valid' : 'integrity is corrupted'}`);
 
 console.log('Changing a block...');
 bc.chain[1].data = { amount: 100 };
+bc.chain[1].hash = bc.chain[1].calculateHash();
 
 console.log(`BC ${bc.isChainValid() ? 'is valid' : 'integrity is corrupted'}`);
 
