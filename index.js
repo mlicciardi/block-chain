@@ -2,6 +2,12 @@
 
 const SHA256 = require('crypto-js/sha256');
 
+class BlockChain{
+  constructor() {
+      this.chain = [];
+  }
+}
+
 class Block {
   constructor(index, timestamp, data, previousHash = '') {
       this.index = index;
