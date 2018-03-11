@@ -1,6 +1,7 @@
 'use strict'
 
 const SHA256 = require('crypto-js/sha256');
+const moment = require('moment');
 
 let bc = new Blockchain();
 bc.addBlock(new Block(1, '20/07/2017', { amount: 1 }));
