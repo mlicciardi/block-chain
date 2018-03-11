@@ -12,10 +12,14 @@ class BlockChain{
   }
 
   addBlock(block) {
-    block.previousHash = this.chain[this.chain.length - 1].hash;
+    block.previousHash = this.getLatestBlock().hash;
     block.hash = block.calculateHash();
     this.chain.push(block);
   }
+
+  getLatestBlock() {
+    return this.chain[this.chain.length - 1];
+}
 }
 
 class Block {
