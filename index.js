@@ -5,28 +5,50 @@ const moment = require('moment');
 
 class BlockChain{
   constructor() {
-    this.difficulty = 2;
-    this.chain = [this.createGenesisBlock()];
+    this.reward = 1;
+    this.difficulty = 1;
+    this.transactions = [];
+    this.chain = [new Block(moment().unix(), this.transactions, null)];
   }
 
-  createGenesisBlock() {
-    return new Block(0, moment().unix(), null, null);
-  }
+  mineTransactions(address) {
+    let timestamp = moment().unix();
+    let transactions = this.transactions;
+    let lastBlock = this.getLatestBlock().hash;
 
-  addBlock(block) {
-    block.previousHash = this.getLatestBlock().hash;
+    let block = new Block(timestamp, transactions, lastBlock)
     block.mineBlock(this.difficulty);
+
     this.chain.push(block);
+
+    this.transactions = [new Transaction(null, address, this.reward)];
+  }
+
+  createTransaction(transaction) {
+    this.transactions.push(transaction);
+  }
+
+  getBalance(address) {
+    let balance = 0;
+
+    this.chain.map((block) => {
+      block.transactions.map((transaction) => {
+        if (transaction.from === address) balance -= transaction.amount;
+        if (transaction.to === address) balance += transaction.amount;
+      });
+    });
+
+    return balance;
   }
 
   isChainValid() {
-    for (let i = 1; i < this.chain.length; i++){
+    for (let i = 1; i < this.chain.length; i++) {
       const currentBlock = this.chain[i];
       const previousBlock = this.chain[i - 1];
 
-      if (currentBlock.hash !== currentBlock.calculateHash()) return false;
-
       if (currentBlock.previousHash !== previousBlock.hash) return false;
+
+      if (currentBlock.hash !== currentBlock.calculateHash()) return false;
     }
 
     return true;
@@ -38,48 +60,67 @@ class BlockChain{
 }
 
 class Block {
-  constructor(index, timestamp, data, previousHash = null) {
-      this.index = index;
-      this.timestamp = timestamp;
-      this.data = data;
-      this.previousHash = previousHash;
-      this.nonce = 0;
-      this.hash = this.calculateHash();
+  constructor(timestamp, transactions, previousHash = null) {
+    this.timestamp = timestamp;
+    this.previousHash = previousHash;
+    this.transactions = transactions;
+    this.hash = this.calculateHash();
+    this.nonce = 0;
   }
 
   calculateHash() {
-    return SHA256(this.index + this.previousHash + this.timestamp + JSON.stringify(this.data) + this.nonce).toString();
+    return SHA256(
+      this.previousHash
+      + this.timestamp
+      + JSON.stringify(this.transactions)
+      + this.nonce)
+      .toString();
   }
 
   mineBlock(difficulty) {
-    console.log(`${moment().format()} | START MINING...`);
-    while (this.hash.substring(0, difficulty) !== Array(difficulty + 1).join("0")) {
-      this.nonce++;
-      this.hash = this.calculateHash();
+    while (this.hash.substring(0, difficulty) !== Array(difficulty + 1).join('0')) {
+        this.nonce++;
+        this.hash = this.calculateHash();
     }
-    console.log(`${moment().format()} | BLOCK MINED! ${this.hash}`);
   }
 }
 
 class Transaction{
-  constructor(from, to, amount){
+  constructor(from, to, amount) {
       this.from = from;
       this.to = to;
       this.amount = amount;
   }
 }
 
+const log = function log() {
+  console.log(`\nBC integrity: ${bc.isChainValid() ? 'valid' : 'CORRUPTED!'}`);
+  miners.map((m) => console.log(`Balance of ${m} is ${bc.getBalance(m)}`));
+  console.log(`${bc.chain.length} nodes in the chain.\n`);
+}
+
+let miner = 'alice';
+let miners = [miner, 'bob'];
+
 let bc = new BlockChain();
 
-bc.addBlock(new Block(1, moment().unix(), { amount: 1 }));
-bc.addBlock(new Block(2, moment().unix(), { amount: 1 }));
+log();
 
-console.log(JSON.stringify(bc, null, 2));
+console.log('Starting the miner...');
+bc.mineTransactions(miner);
 
-// console.log(`BC ${bc.isChainValid() ? 'is valid' : 'integrity is corrupted'}`);
+console.log('Starting the miner again...');
+bc.mineTransactions(miner);
 
-// console.log('Changing a block...');
-// bc.chain[1].data = { amount: 100 };
-// bc.chain[1].hash = bc.chain[1].calculateHash();
+console.log('Starting the miner again again...');
+bc.mineTransactions(miner);
 
-// console.log(`BC ${bc.isChainValid() ? 'is valid' : 'integrity is corrupted'}`);
+log();
+
+console.log('Transaction: Alice => Bob');
+bc.createTransaction(new Transaction(miner, 'bob', 1));
+
+console.log('Transaction: Alice <= Bob');
+bc.createTransaction(new Transaction('bob', miner, 1));
+
+log();
